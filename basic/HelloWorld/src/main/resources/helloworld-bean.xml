@@ -7,10 +7,10 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.3.xsd">
 
- <int:channel id="stdInbound" />
+ <int:channel id="greeting" />
  <int:poller id="inboundPoller"  default="true" fixed-delay="100" />
- <int-stream:stdin-channel-adapter  id="stdInAdapter"  channel="stdInbound"/>
- <int-stream:stdout-channel-adapter id="stdOutAdapter" channel="stdInbound" append-newline="true"/>
+ <int-stream:stdin-channel-adapter  id="stdInAdapter"  channel="greeting"/>
+ <int-stream:stdout-channel-adapter id="stdOutAdapter" channel="greeting" append-newline="true"/>
  
 
 </beans>
