@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration/stream http://www.springframework.org/schema/integration/stream/spring-integration-stream-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.3.xsd">
+
+ <int:channel id="stdInbound" />
+ <int:poller id="inboundPoller"  default="true" fixed-delay="100" />
+ <int-stream:stdin-channel-adapter  id="stdInAdapter"  channel="stdInbound"/>
+ <int-stream:stdout-channel-adapter id="stdOutAdapter" channel="stdInbound" append-newline="true"/>
+ 
+
+</beans>
