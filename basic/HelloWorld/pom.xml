@@ -9,18 +9,17 @@
 		<junit.version>4.11</junit.version>
   </properties>
 	
-	<dependencies>
+  <dependencies>
     <dependency>
       <groupId>org.springframework.integration</groupId>
       <artifactId>spring-integration-stream</artifactId>
-      <version>{spring-framework.version}</version>
+      <version>${spring-framework.version}</version> 
     </dependency>
-		<dependency>
+	<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
 			<scope>test</scope>
-		</dependency>
-
-	</dependencies>	
+	</dependency>
+   </dependencies>	
 </project>
