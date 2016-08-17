@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration/stream http://www.springframework.org/schema/integration/stream/spring-integration-stream-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.3.xsd">
+
+   <int:channel id="employeeInput"/>
+   <int:channel id="employeeOutput"/>
+
+   <int:chain input-channel="employeeInput" output-channel="employeeOutput">
+     <int:service-activator ref="employeeService"    method="getEmployeeData"/>
+     <int:service-activator ref="eligibilityService" method="getPromotionEligibility" />
+   </int:chain>
+
+   <int:header-value-router  header-name="endpointType" input-channel="employeeOutput">
+       <int:mapping value="jms"      channel="jmsOut"/>
+       <int:mapping value="file"     channel="fileOut"/>
+    </int:header-value-router> 
+   
+   <bean id="eligibilityService"  class="com.samples.service.EligibilityService" />
+   <bean id="employeeService"   class="com.samples.service.EmployeeService">
+     <property name="employeeDao" ref="employeeDao"/>
+   </bean>
+   <bean id="employeeDao"  class="com.samples.dao.EmployeeDao" />   
+
+</beans>

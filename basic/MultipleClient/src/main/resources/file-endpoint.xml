@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int-file="http://www.springframework.org/schema/integration/file"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration/stream http://www.springframework.org/schema/integration/stream/spring-integration-stream-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/file http://www.springframework.org/schema/integration/file/spring-integration-file-4.3.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.3.xsd">
+
+  <int:channel id="fileInboundMessage"/>
+  <int:poller  id="fileInPoller" fixed-delay="1000" default="true"/>
+  <int-file:inbound-channel-adapter id="fileIn" channel="fileInboundMessage"  
+                                    directory="c:/SpringInput" filename-pattern="*.txt"/>
+  
+  <int:chain  input-channel="fileInboundMessage" output-channel="employeeInput">
+	  <int:header-enricher>
+	    <int:header name="endpointType" value="file"/>
+	  </int:header-enricher>	 
+	  <int-file:file-to-string-transformer/> 
+	  <int:transformer expression="new com.samples.dao.Employee(payload)" />
+  </int:chain>
+
+  <int:channel id="fileOut" />
+  
+  <int:chain input-channel="fileOut">
+     <int:service-activator  ref="fileResponseFormatter" method="convertToFileResponse"/>
+     <int-file:outbound-channel-adapter directory="C:/SpringOutput" filename-generator-expression="T(java.lang.System).currentTimeMillis() + '.txt'" />
+  </int:chain>
+  
+  
+  <bean id="fileResponseFormatter" class="com.samples.converter.FileResponseFormatter"/>
+  
+</beans>

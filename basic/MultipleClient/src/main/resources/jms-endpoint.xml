@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
+	xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration/stream http://www.springframework.org/schema/integration/stream/spring-integration-stream-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-4.3.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.3.xsd">
+
+
+  <int:channel id="jmsInboundMessage"/>
+  
+   <int-jms:inbound-gateway message-converter="jmsMessageConverter" request-channel="jmsInboundMessage"
+                          request-destination="requestQueue"  default-reply-destination="responseQueue"/>
+                                             
+   <int:header-enricher input-channel="jmsInboundMessage" output-channel="employeeInput">
+	     <int:header name="endpointType" value="jms"/>
+   </int:header-enricher>
+ 
+
+   <int:channel id="jmsOut"/>
+   <int:service-activator input-channel="jmsOut" ref="jmsResponse" method="convertToJmsResponse" /> 
+   
+
+   <bean id="jmsResponse"          class="com.samples.converter.JmsResponseFormatter"/>
+   <bean id="jmsMessageConverter"  class="com.samples.converter.JmsMessageConverter"/>
+
+</beans>
