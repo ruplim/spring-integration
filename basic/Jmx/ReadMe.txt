@@ -1,0 +1,1 @@
+In this example we use Spring Intergration's Out of Box JMX capability to shutdown the context gracefully from Jconsole. 

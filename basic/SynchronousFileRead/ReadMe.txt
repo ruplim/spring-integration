@@ -1,0 +1,2 @@
+This example  shows how spring integration can be used to read a file md-process when provided with a filename.
+It shows the Sync File Read Capability. 
