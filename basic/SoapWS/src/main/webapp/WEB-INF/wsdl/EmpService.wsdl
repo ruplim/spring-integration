@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+                  xmlns:tns="http://www.example.org/wsdl/EmpService/" 
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                  name="EmpService" 
+                  xmlns:emp="http://www.example.org/xsd/Employee"
+                  targetNamespace="http://www.example.org/wsdl/EmpService/">
+                  
+  <wsdl:types>
+         <schema xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://www.example.org/xsd/Employee" schemaLocation="../XSD/Employee.xsd"/>
+         </schema>
+  </wsdl:types>
+
+  <wsdl:message name="EmpRequest">
+    <wsdl:part name="payload" element="emp:Employee" />
+  </wsdl:message>
+  <wsdl:message name="EmpResponse">
+    <wsdl:part name="payload" element="emp:Employee"/>
+  </wsdl:message>
+  
+  <wsdl:portType name="EmpServicePT">
+    <wsdl:operation name="getName">
+      <wsdl:input message="tns:EmpRequest"/>
+      <wsdl:output message="tns:EmpResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="getEligibility">
+      <wsdl:input message="tns:EmpRequest"/>
+      <wsdl:output message="tns:EmpResponse"/>
+    </wsdl:operation>     
+  </wsdl:portType>
+  <wsdl:binding name="EmpServiceSOAP" type="tns:EmpServicePT">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    
+    <wsdl:operation name="getName">
+      <soap:operation soapAction="EmpService/getName"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getEligibility">
+      <soap:operation soapAction="EmpService/getEligibility"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="EmpService">
+    <wsdl:port name="EmpServiceSOAP" binding="tns:EmpServiceSOAP">
+      <soap:address location="http://"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

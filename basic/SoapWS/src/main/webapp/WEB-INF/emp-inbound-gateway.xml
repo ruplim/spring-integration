@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-ws="http://www.springframework.org/schema/integration/ws"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.3.xsd
+		http://www.springframework.org/schema/integration/ws http://www.springframework.org/schema/integration/ws/spring-integration-ws-4.3.xsd">
+
+   <int:channel id="ws-requests"/>
+   <int-ws:inbound-gateway id="ws-inbound-emp-gateway" request-channel="ws-requests" extract-payload="true"/>
+   
+   <!-- 
+        Note that SOAPAction value contains a quote :: "EmpService/getName" 
+        SOAP UI adding double quotes but other clients might not
+        So considering using standard ####  <router> ####  logic
+   -->
+   <!-- 
+     <int:header-value-router header-name="ws_soapAction" input-channel="ws-requests">
+       <int:mapping value='"EmpService/getName"'         channel="getNamePipe"/>
+       <int:mapping value='"EmpService/getEligibility"'  channel="getEligibilityPipe"/>
+     </int:header-value-router> 
+   -->
+   
+   <int:router input-channel="ws-requests" method="routeRequest">
+      <bean class="com.samples.OperationResolver"/>
+   </int:router>
+   
+   
+   <int:service-activator  input-channel="getNamePipe"        ref="empServiceProvider" method="getName"/>
+   <int:service-activator  input-channel="getEligibilityPipe" ref="empServiceProvider" method="getEligibility"/>
+   <int:service-activator  input-channel="echoPipe"           ref="empServiceProvider" method="echoMessage"/>
+      
+   <bean id="empServiceProvider" class="com.samples.EmpServiceProvider"/>
+   
+</beans>
