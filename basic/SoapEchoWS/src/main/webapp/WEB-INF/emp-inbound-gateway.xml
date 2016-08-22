@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-ws="http://www.springframework.org/schema/integration/ws"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.3.xsd
+		http://www.springframework.org/schema/integration/ws http://www.springframework.org/schema/integration/ws/spring-integration-ws-4.3.xsd">
+
+    <int:channel id="ws-requests"/>
+    <int-ws:inbound-gateway id="ws-inbound-emp-gateway" request-channel="ws-requests" extract-payload="true"  
+                            header-mapper="customMapper" />
+                           
+    <bean id="customMapper" class="com.samples.CustomHeaderMapper">
+      <property name="requestHeaderNames" value="*"/>
+      <property name="replyHeaderNames"   value="*"/>
+    </bean>                       
+    <int:service-activator  input-channel="ws-requests"  ref="empServiceProvider" method="echoMessage"/>
+      
+    <bean id="empServiceProvider" class="com.samples.EmpServiceProvider"/>  
+</beans>

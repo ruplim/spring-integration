@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+        targetNamespace="http://www.example.org/xsd/Employee" 
+        xmlns:tns="http://www.example.org/xsd/Employee" 
+        elementFormDefault="qualified">
+
+    <element name="Employee" type="tns:EmployeeType"/>
+    
+    <complexType name="EmployeeType">
+    	<sequence>
+    		<element name="EmpId"          type="string"/>
+    		<element name="EmpFName"          type="string"/>
+    		<element name="EmpLName"          type="string"/>
+    		<element name="EmpEligibility" type="string"/>
+    	</sequence>
+    </complexType>
+</schema>
