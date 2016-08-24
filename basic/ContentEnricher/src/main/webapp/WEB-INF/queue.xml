@@ -4,23 +4,23 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
  <bean id="connectionFactory" class="com.ibm.mq.jms.MQQueueConnectionFactory">
-    <property name="hostName"      value="sysmq"/>
-    <property name="port"          value="1"/>
-    <property name="queueManager"  value="SYSMQ"/>
-    <property name="channel"       value="SYSMQCHAN"/>
+    <property name="hostName"      value="sysmq7007"/>
+    <property name="port"          value="14407"/>
+    <property name="queueManager"  value="SYSMQ7007"/>
+    <property name="channel"       value="GTH.SYSMQ7007.OSB"/>
     <property name="transportType" value="1"/>
   </bean> 
 
    <bean id="requestQueue"  class="com.ibm.mq.jms.MQQueue">
-     <constructor-arg value="UNIT1"/>
-     <property name="baseQueueManagerName" value="SYSMQ"/>
-     <property name="baseQueueName" value="UNIT1"/>
+     <constructor-arg value="GTH.ERROR.UNIT1"/>
+     <property name="baseQueueManagerName" value="SYSMQ7007"/>
+     <property name="baseQueueName" value="GTH.ERROR.UNIT1"/>
    </bean>
 
    <bean id="responseQueue"  class="com.ibm.mq.jms.MQQueue">
-     <constructor-arg value="UNIT2"/>
-     <property name="baseQueueManagerName" value="SYSMQ"/>
-     <property name="baseQueueName" value="UNIT2"/>
+     <constructor-arg value="GTH.FMS.ACK.IN.UNIT1"/>
+     <property name="baseQueueManagerName" value="SYSMQ7007"/>
+     <property name="baseQueueName" value="GTH.FMS.ACK.IN.UNIT1"/>
    </bean>
 
 </beans>

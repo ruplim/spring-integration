@@ -3,32 +3,14 @@ package com.samples;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-
-
-import javax.xml.soap.*;
 
 import org.springframework.integration.ws.DefaultSoapHeaderMapper;
 import org.springframework.integration.ws.WebServiceHeaders;
-import org.springframework.ws.soap.SoapElement;
 import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.SoapMessage;
-import org.springframework.ws.soap.saaj.SaajSoapHeaderException;
-import org.springframework.xml.namespace.QNameUtils;
-import org.springframework.xml.transform.StringResult;
-import org.springframework.xml.transform.StringSource;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public class CustomHeaderMapper  extends DefaultSoapHeaderMapper {
 	
