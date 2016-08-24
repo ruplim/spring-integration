@@ -15,7 +15,7 @@ public class Init
         ctx.registerShutdownHook();
         
 		try {
-			Thread.sleep(1*10*1000);
+			Thread.sleep(1*60*1000);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block 
 			e.printStackTrace();

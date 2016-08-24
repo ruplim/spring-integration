@@ -1,0 +1,1 @@
+In this example the core functionality is exposed via 2 endpoints - JMS and File  
