@@ -3,34 +3,53 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:int="http://www.springframework.org/schema/integration"
 	xmlns:int-ws="http://www.springframework.org/schema/integration/ws"
+	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-4.3.xsd
 		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.3.xsd
 		http://www.springframework.org/schema/integration/ws http://www.springframework.org/schema/integration/ws/spring-integration-ws-4.3.xsd">
 
-   <int:channel id="ws-requests"/>
-   <int-ws:inbound-gateway id="ws-inbound-emp-gateway" request-channel="ws-requests" extract-payload="true"/>
-   
-   <!-- 
-        Note that SOAPAction value contains a quote :: "EmpService/getName" 
-        SOAP UI adding double quotes but other clients might not
-        So considering using standard ####  <router> ####  logic
-   -->
-   <!-- 
-     <int:header-value-router header-name="ws_soapAction" input-channel="ws-requests">
-       <int:mapping value='"EmpService/getName"'         channel="getNamePipe"/>
-       <int:mapping value='"EmpService/getEligibility"'  channel="getEligibilityPipe"/>
-     </int:header-value-router> 
-   -->
-   
-   <int:router input-channel="ws-requests" method="routeRequest">
+    <int:channel id="ws-requests"/>
+    <int-ws:inbound-gateway id="ws-inbound-emp-gateway" request-channel="ws-requests"  
+						    marshaller="jaxbMarshaller"  unmarshaller="jaxbMarshaller"
+						    header-mapper="customHeaderMapper"  />
+                                          
+    <int:header-value-router header-name="#{T(org.springframework.integration.ws.WebServiceHeaders).SOAP_ACTION}" input-channel="ws-requests">   
+       <int:mapping value="EmpService/echo"    channel="echoPipe"/>
+       <int:mapping value="EmpService/login"   channel="loginPipe"/>
+       <int:mapping value="EmpService/getName" channel="getNamePipe"/>
+       <int:mapping value="EmpService/logoff"  channel="logoffPipe"/>
+    </int:header-value-router> 
+    
+    <!--   ###  Other option ###    
+    <int:router input-channel="ws-requests" method="routeRequest">
       <bean class="com.samples.OperationResolver"/>
-   </int:router>
+    </int:router>  
+    -->   
+
+    <!-- Handle operation 'login' -->
+    <int:service-activator  input-channel="loginPipe" ref="authService" method="login"/>
+       
+    <!-- Handle operation 'logout' -->
+    <int:service-activator  input-channel="logoffPipe" ref="authService" method="logoff"/>
+
+    <!-- Handle operation 'echo' -->
+   <int:service-activator  input-channel="echoPipe"   ref="empServiceProvider" method="echoMessage"/>
    
+    <!-- Handle operation 'getName' -->
+    <int:service-activator  input-channel="getNamePipe" ref="empServiceProvider" method="getName"/>
+
    
-   <int:service-activator  input-channel="getNamePipe"        ref="empServiceProvider" method="getName"/>
-   <int:service-activator  input-channel="getEligibilityPipe" ref="empServiceProvider" method="getEligibility"/>
-   <int:service-activator  input-channel="echoPipe"           ref="empServiceProvider" method="echoMessage"/>
-      
-   <bean id="empServiceProvider" class="com.samples.EmpServiceProvider"/>
-   
+     <bean id="customHeaderMapper" class="com.samples.CustomHeaderMapper">
+       <property name="requestHeaderNames" value="*" />
+       <property name="replyHeaderNames"   value="*"/>
+     </bean>  
+       
+     <bean  id="jaxbMarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+        <property name="contextPath" value="com.samples.jaxb"/>
+     </bean>     
+    
+     <bean id="empServiceProvider" class="com.samples.EmpServiceProvider"/>
+     <bean id="authService" class="com.samples.AuthService"/>
+     
 </beans>

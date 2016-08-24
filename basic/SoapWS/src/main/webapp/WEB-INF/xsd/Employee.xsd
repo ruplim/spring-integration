@@ -4,14 +4,19 @@
         xmlns:tns="http://www.example.org/xsd/Employee" 
         elementFormDefault="qualified">
 
-    <element name="Employee" type="tns:EmployeeType"/>
-    
-    <complexType name="EmployeeType">
+    <element name="Employee">
+      <complexType>
     	<sequence>
     		<element name="EmpId"          type="string"/>
-    		<element name="EmpFName"          type="string"/>
-    		<element name="EmpLName"          type="string"/>
-    		<element name="EmpEligibility" type="string"/>
+    		<element name="EmpName"        type="string"/>
+    		<element name="EmpSsn"         type="string"/>
     	</sequence>
-    </complexType>
+       </complexType>
+    </element>
+    
+    
+    <element name="Logoff">
+      <complexType/>
+    </element>    
+  
 </schema>

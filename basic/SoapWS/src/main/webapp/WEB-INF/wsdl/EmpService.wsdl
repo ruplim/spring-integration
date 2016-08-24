@@ -9,7 +9,7 @@
                   
   <wsdl:types>
          <schema xmlns="http://www.w3.org/2001/XMLSchema">
-            <import namespace="http://www.example.org/xsd/Employee" schemaLocation="../XSD/Employee.xsd"/>
+            <import namespace="http://www.example.org/xsd/Employee" schemaLocation="../xsd/Employee.xsd"/>
          </schema>
   </wsdl:types>
 
@@ -19,20 +19,54 @@
   <wsdl:message name="EmpResponse">
     <wsdl:part name="payload" element="emp:Employee"/>
   </wsdl:message>
+
+  <wsdl:message name="LogoffRequest">
+    <wsdl:part name="payload" element="emp:Logoff" />
+  </wsdl:message>
+  <wsdl:message name="LogoffResponse">
+    <wsdl:part name="payload" element="emp:Logoff"/>
+  </wsdl:message>
+
   
   <wsdl:portType name="EmpServicePT">
+    <wsdl:operation name="echo">
+      <wsdl:input message="tns:EmpRequest"/>
+      <wsdl:output message="tns:EmpResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="login">
+      <wsdl:input message="tns:EmpRequest"/>
+      <wsdl:output message="tns:EmpResponse"/>
+    </wsdl:operation>
     <wsdl:operation name="getName">
       <wsdl:input message="tns:EmpRequest"/>
       <wsdl:output message="tns:EmpResponse"/>
     </wsdl:operation>
-    <wsdl:operation name="getEligibility">
-      <wsdl:input message="tns:EmpRequest"/>
-      <wsdl:output message="tns:EmpResponse"/>
+    <wsdl:operation name="logoff">
+      <wsdl:input message="tns:LogoffRequest"/>
+      <wsdl:output message="tns:LogoffResponse"/>
     </wsdl:operation>     
   </wsdl:portType>
   <wsdl:binding name="EmpServiceSOAP" type="tns:EmpServicePT">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
     
+    <wsdl:operation name="echo">
+      <soap:operation soapAction="EmpService/echo"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="login">
+      <soap:operation soapAction="EmpService/login"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getName">
       <soap:operation soapAction="EmpService/getName"/>
       <wsdl:input>
@@ -42,8 +76,8 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getEligibility">
-      <soap:operation soapAction="EmpService/getEligibility"/>
+    <wsdl:operation name="logoff">
+      <soap:operation soapAction="EmpService/logoff"/>
       <wsdl:input>
         <soap:body use="literal"/>
       </wsdl:input>
@@ -54,7 +88,7 @@
   </wsdl:binding>
   <wsdl:service name="EmpService">
     <wsdl:port name="EmpServiceSOAP" binding="tns:EmpServiceSOAP">
-      <soap:address location="http://"/>
+      <soap:address location="http://localhost:8080/SOAPWS"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
