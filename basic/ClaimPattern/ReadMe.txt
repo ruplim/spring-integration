@@ -1,0 +1,1 @@
+In this example the CLAIM CHECK pattern is demostrated
