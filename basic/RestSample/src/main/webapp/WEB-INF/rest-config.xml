@@ -18,117 +18,100 @@
 	    request-channel="httpGetChannel"
 		reply-channel="responseChannel"
 		supported-methods="GET"
+		path="/emps/{empId}"
 		message-converters="converters"
 		mapped-request-headers="HTTP_REQUEST_HEADERS"
 		mapped-response-headers="HTTP_RESPONSE_HEADERS"
-		path="/emps/{empId}"
 		payload-expression="#pathVariables.empId">
 		
-		<int-http:request-mapping  consumes="application/json,application/xml"  produces="application/json, application/xml"/>
+		<int-http:request-mapping  produces="application/json, application/xml"/>
 				
 	    <int-http:header name="requestContextPath" 
 	                   expression="T(org.springframework.web.context.request.RequestContextHolder).requestAttributes.request.contextPath"/>
-
       
 	</int-http:inbound-gateway>
+	
+<!-- 	<int:router input-channel="httpInboundChannel" expression="T(org.springframework.integration.http.HttpHeaders).REQUEST_METHOD">
+       <int:mapping value="GET"  channel="httpGetChannel"/>
+       <int:mapping value="PUT"  channel="httpPutChannel"/>
+    </int:router>	
+ -->	
     <int:service-activator ref="empHttpService" method="get"  input-channel="httpGetChannel" output-channel="responseChannel"/>
     
     
     <!-- DELETE -->
     <int-http:inbound-channel-adapter
          channel="httpDeleteChannel"
-         path="/emp/{empId}"
+         path="/emps/{empId}"
          supported-methods="DELETE"
          status-code-expression="T(org.springframework.http.HttpStatus).NO_CONTENT"
          payload-expression="#pathVariables.empId"/>
+
+    <int:service-activator ref="empHttpService" method="delete" input-channel="httpDeleteChannel"/>
     
-      <!-- POST -->
-      <int-http:inbound-gateway
+    <!-- PUT -->
+    <int-http:inbound-channel-adapter
+         channel="httpPutChannel"
+         path="/emps/{empId}"
+         supported-methods="PUT"
+         request-payload-type="com.samples.jaxb.Employee"
+         status-code-expression="T(org.springframework.http.HttpStatus).NO_CONTENT">
+         
+         <int-http:request-mapping     consumes="application/json, application/xml"/>
+         <int-http:header name="EmpId" expression="#pathVariables.empId"/>
+        
+    </int-http:inbound-channel-adapter>
+    <int:service-activator ref="empHttpService" method="put" input-channel="httpPutChannel"/>
+         
+    <!-- POST -->
+    <int-http:inbound-gateway
          request-channel="httpPostChannel"
          reply-channel="responseChannel"
-         path="/emp"
-         supported-methods="POST" 
-         mapped-request-headers="*"  
-         mapped-response-headers="*"
+         supported-methods="POST"
+         path="/emps"
+         mapped-request-headers="HTTP_REQUEST_HEADERS"  
+         mapped-response-headers="HTTP_RESPONSE_HEADERS"
          message-converters="converters" 
-         request-payload-type="com.samples.jaxb.Employee"/>
+         request-payload-type="com.samples.jaxb.Employee">
          
-	
-<!-- 	<int:router input-channel="httpChannel" expression="headers.http_requestMethod">
-       <int:mapping value="GET"    channel="getRequest"/>
-       <int:mapping value="DELETE" channel="deleteRequest"/>
-    </int:router> -->
+        <int-http:request-mapping  consumes="application/json, application/xml"   produces="application/json, application/xml"/>
+				
+	    <int-http:header name="requestContextPath" 
+	                   expression="T(org.springframework.web.context.request.RequestContextHolder).requestAttributes.request.contextPath"/>
+
+     </int-http:inbound-gateway>
+     <int:service-activator ref="empHttpService" method="post"   input-channel="httpPostChannel"   output-channel="responseChannel"/> 
 
 
-
-    <!-- Variant 1-->
+    <!-- Search for all Employees -->
 	<int-http:inbound-gateway 
-	    request-channel="httpVar1Channel"
+	    request-channel="httpSearchChannel"
+		reply-channel="responseChannel"
 		supported-methods="GET"
+		path="/emps"
 		message-converters="converters"
-	    mapped-request-headers="*"
-		path="/dept1/{deptId}/emp/{empId}"
-		payload-expression="new com.samples.EmployeeDTO(#pathVariables.deptId, 
-		                                                #pathVariables.empId,
-		                                                #requestParams.getFirst('dependent'))">
+		mapped-request-headers="HTTP_REQUEST_HEADERS"
+		mapped-response-headers="HTTP_RESPONSE_HEADERS"
+		payload-expression="new com.samples.EmployeeSearchDTO(#requestParams.getFirst('startOffSet'), #requestParams.getFirst('endOffSet'))">
 		
-	</int-http:inbound-gateway> 
-	<!-- Variant One  -->
-	<int:service-activator ref="empHttpService" method="getVar1"   input-channel="httpVar1Channel" />
+		<int-http:request-mapping  produces="application/json, application/xml"/>
+      
+	</int-http:inbound-gateway>    
+    <int:service-activator ref="empHttpService" method="search"   input-channel="httpSearchChannel"   output-channel="responseChannel"/>
 
-    <!-- Variant 2-->
-	<int-http:inbound-gateway 
-	    request-channel="httpVar2Channel"
-		supported-methods="POST"
-		message-converters="converters"
-	    mapped-request-headers="*"
-	    request-payload-type="com.samples.jaxb.Employee"
-		path="/dept2/{deptId}/emp/{empId}"
-		payload-expression="new com.samples.EmployeeDTO(#pathVariables.deptId, 
-		                                                #pathVariables.empId,
-		                                                #requestParams.getFirst('dependent'),
-		                                                T(org.springframework.web.context.request.RequestContextHolder).requestAttributes.request.contextPath
-                                                        )">
-                                                        
-		
-	</int-http:inbound-gateway> 
-	<!-- Variant two  -->
-	<int:service-activator ref="empHttpService" method="getVar2"   input-channel="httpVar2Channel" />
-    
-    
-	
-	
-	<int:service-activator ref="empHttpService" method="delete" input-channel="httpDeleteChannel"/>
-	
-<!-- 	<int:chain input-channel="httpPostChannel">
-	  <int:service-activator ref="empHttpService" method="post"/>
-	  <int:header-enricher>
-	    <int:header name="T(org.springframework.http.HttpHeaders).LOCATION" value="'http://localhost:8080/emp/' + payload.empId"/>
-	  </int:header-enricher>
-	</int:chain> -->
-	
-	
-	<int:service-activator ref="empHttpService" method="post"   input-channel="httpPostChannel"   output-channel="responseChannel"/>
-	
-	
-	
 	<util:list id="converters">
 	    <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
 	    <bean class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
            <property name="marshaller"   ref="jaxbMarshaller" />
            <property name="unmarshaller" ref="jaxbMarshaller" />
         </bean> 
-        
 	</util:list>
-	
     <bean id="empHttpService" class="com.samples.EmpService">
       <property name="empDao">
            <bean class="com.samples.EmpDao"/>
       </property>
     </bean>
-     
      <bean  id="jaxbMarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
         <property name="contextPath" value="com.samples.jaxb"/>
      </bean>  
-
 </beans>

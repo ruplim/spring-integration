@@ -1,34 +1,35 @@
-GET
-=====
+GET    : http://localhost:8080/RestSample/emps/1
+DELETE : http://localhost:8080/RestSample/emps/1
+POST   : http://localhost:8080/RestSample/emps
 
-URI:  http://localhost:8080/RestSample/emps/1
 
-a. JSON Output:
+a. JSON Format:
 ---------------
 {
-  "empId": "1",
+  "empId": "22",
   "empFirstName": "Stephen",
   "empLastName": "Brian",
+  "empSsn": "342-452-0987",
   "spouse": {
     "name": "Heidi",
     "age": "43"
   }
-}
+}}
 
 
 Content-Type    application/xml
 Accept          application/xml
 
-b. XML Output:
+b. XML Format:
 -------------------
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Employee xmlns="http://www.example.org/xsd/Employee">
-    <EmpId>1</EmpId>
+    <EmpId>22</EmpId>
     <EmpFirstName>Stephen</EmpFirstName>
     <EmpLastName>Brian</EmpLastName>
+    <EmpSsn>342-452-0987</EmpSsn>
     <Spouse>
         <Name>Heidi</Name>
         <Age>43</Age>
     </Spouse>
 </Employee>
-

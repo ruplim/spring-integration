@@ -4,12 +4,22 @@
         xmlns:tns="http://www.example.org/xsd/Employee" 
         elementFormDefault="qualified">
 
+   <element name="EmpList">
+     <complexType>
+    	<sequence>
+    	   <element ref="tns:Employee" maxOccurs="unbounded"/>
+    	</sequence>
+     </complexType>
+   </element>
+
+
     <element name="Employee">
       <complexType>
     	<sequence>
     		<element name="EmpId"               type="string"/>
     		<element name="EmpFirstName"        type="string"/>
     		<element name="EmpLastName"         type="string"/>
+    		<element name="EmpSsn"              type="string"/>
     		<element name="Spouse"              type="tns:SpouseType"/>
     	</sequence>
        </complexType>
