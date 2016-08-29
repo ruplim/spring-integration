@@ -1,7 +1,9 @@
 GET    : http://localhost:8080/RestSample/emps/1
 DELETE : http://localhost:8080/RestSample/emps/1
 POST   : http://localhost:8080/RestSample/emps
+PUT    : http://localhost:8080/RestSample/emps/1
 
+GET (Search) : http://localhost:8080/RestSample/emps?startOffSet=1&endOffSet=202
 
 a. JSON Format:
 ---------------
