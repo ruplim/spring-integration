@@ -6,4 +6,4 @@
 //
 
 @javax.xml.bind.annotation.XmlSchema(namespace = "http://www.example.org/RestSample/Employee", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-package com.samples.jaxb;
+package com.samples.server;

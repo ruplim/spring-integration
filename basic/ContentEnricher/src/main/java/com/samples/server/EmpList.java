@@ -6,7 +6,7 @@
 //
 
 
-package com.samples.jaxb;
+package com.samples.server;
 
 import java.util.ArrayList;
 import java.util.List;

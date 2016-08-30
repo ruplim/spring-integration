@@ -24,6 +24,9 @@ public class EmpDao {
 		emp.setEmpLastName("Brian");
 		emp.setEmpSsn("342-452-0987");
 		emp.setSpouse(spouseType);
+
+		if("Jh121".equals(empId))
+			emp.setEmpSsn("111-111-1111");
 		
 		return emp;
 	}

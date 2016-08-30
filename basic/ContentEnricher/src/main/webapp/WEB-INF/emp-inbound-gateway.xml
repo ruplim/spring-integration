@@ -4,42 +4,53 @@
 	xmlns:int="http://www.springframework.org/schema/integration"
 	xmlns:int-ws="http://www.springframework.org/schema/integration/ws"
 	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
+	xmlns:int-http="http://www.springframework.org/schema/integration/http"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
 		http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-4.3.xsd
+		http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http-4.3.xsd
 		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.3.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd
 		http://www.springframework.org/schema/integration/ws http://www.springframework.org/schema/integration/ws/spring-integration-ws-4.3.xsd">
 
     <import resource="queue.xml"/>
-
+    <context:property-placeholder  location="classpath:endpoint.properties"/>
+     
     <int:channel id="ws-requests"/>
     <int-ws:inbound-gateway id="ws-inbound-gateway"      request-channel="ws-requests"  
 						    marshaller="jaxbMarshaller"  unmarshaller="jaxbMarshaller" />
-                            
-       
-           
+                                       
     <int:chain input-channel="ws-requests">
-	    <int:enricher  id="findNameEnricher"
-	                   request-channel="extJmsSystem"
-	                   request-payload-expression="payload.empId">
+	    <int:enricher  id="findNameEnricher" request-channel="extJmsSystem" request-payload-expression="payload.empId">
         	<int:property name="empName"  expression="payload"/>
         </int:enricher>
-        <int:enricher  id="findSsnEnricher"
-	                   request-channel="ssnPipe">
-        	<int:property name="empSsn"  expression="payload"/>
+        <int:enricher  id="findSsnEnricher" request-channel="ssnPipe">
+        	<int:property name="empSsn"     expression="payload.empSsn"/>
         </int:enricher>
     </int:chain>
-   
+    
     <int-jms:outbound-gateway  request-channel="extJmsSystem" 
                                request-destination="requestQueue" reply-destination="responseQueue" 
                                requires-reply="true"/>     
-
-   <int:service-activator input-channel="ssnPipe" ref="empServiceProvider" method="getSsn"/>
-
-   
+                               
+    <int:chain input-channel="ssnPipe">
+      <int:header-enricher>
+        <int:header name="Accept" value="application/json"/>
+      </int:header-enricher>
+      <int-http:outbound-gateway http-method="GET"
+                                 expected-response-type="com.samples.server.Employee"
+                                 url="${ssn.rest.url}">
+                                 
+           <int-http:uri-variable name="empId" expression="payload.empId"/>
+      </int-http:outbound-gateway>
+    </int:chain>
+  
    <bean id="empServiceProvider" class="com.samples.EmpServiceProvider"/>
 
    <bean  id="jaxbMarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
         <property name="contextPath" value="com.samples.jaxb"/>
-   </bean>              
+   </bean>  
    
 </beans>
