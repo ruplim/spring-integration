@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
+	xmlns:int-xml="http://www.springframework.org/schema/integration/xml"
+	xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration/stream http://www.springframework.org/schema/integration/stream/spring-integration-stream-4.3.xsd
+		http://www.springframework.org/schema/integration/xml http://www.springframework.org/schema/integration/xml/spring-integration-xml-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-4.3.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+    <import resource="queue.xml"/>
+    <int-jms:message-driven-channel-adapter   id="jmsIn"  destination="requestQueue"     channel="inputChannel" 
+                                              message-converter="orderMessageConverter"  error-channel="jmsErrorChannel" /> 
+
+    <int-xml:validating-filter  id="validatingFilter"
+							   input-channel="inputChannel"
+							   output-channel="outputChannel"						   
+							   schema-type="xml-schema"
+							   throw-exception-on-rejection="true"			
+							   xml-validator="orderXmlValidator"/>
+
+    <int:service-activator input-channel="outputChannel"   ref="orderProcessor"        method="process"/>	
+    <int:service-activator input-channel="jmsErrorChannel" ref="orderExceptionHandler" method="process"/>
+
+<!--       <int-stream:stdout-channel-adapter id="outputChannel"   append-newline="true"/>	
+      <int-stream:stdout-channel-adapter id="jmsErrorChannel" append-newline="true"/> -->
+	
+	
+	<bean id="orderExceptionHandler" class="com.samples.OrderExceptionHandler"/>
+	<bean id="orderProcessor"        class="com.samples.OrderProcessor"/>
+	
+	  <bean id="orderMessageConverter" class="com.samples.OrderMessageConverter">
+         <property name="xmlPayloadConverter" ref="defaultXmlPayloadConverter"/>
+      </bean>
+      <bean id="defaultXmlPayloadConverter" class="org.springframework.integration.xml.DefaultXmlPayloadConverter"/>
+      
+      
+	  <bean id="orderXmlValidator" class="com.samples.OrderXmlValidator">
+	    <constructor-arg >
+	      <map key-type="java.lang.String" value-type="java.lang.String">
+	         <entry key="urn:com:samples:order.001" value="xsd/order.001.xsd"/>
+	         <entry key="urn:com:samples:order.002" value="xsd/order.002.xsd"/>
+	         <entry key="urn:com:samples:order.003" value="xsd/order.003.xsd"/>
+	      </map>    
+	    </constructor-arg>
+	  </bean>
+
+</beans>

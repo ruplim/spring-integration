@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns="urn:com:samples:order.003"
+            xmlns:tns="urn:com:samples:order.003"
+            targetNamespace="urn:com:samples:order.003" 
+            elementFormDefault="qualified">
+
+    <xsd:element name="order" type="tns:orderType"/>
+    
+    <xsd:complexType name="orderType">
+      <xsd:sequence>
+        <xsd:element name="isbn" type="xsd:string"/>
+        <xsd:element name="quantity" type="xsd:string"/>
+        <xsd:element name="publisher" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>
