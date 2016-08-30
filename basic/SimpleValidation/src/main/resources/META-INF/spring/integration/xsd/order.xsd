@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns="http://www.example.org/orders"
+            xmlns:tns="http://www.example.org/orders"
+            targetNamespace="http://www.example.org/orders" 
+            elementFormDefault="qualified">
+
+    <xsd:element name="order" type="tns:orderType"/>
+    
+    <xsd:complexType name="orderType">
+      <xsd:sequence>
+        <xsd:element name="isbn" type="xsd:string"/>
+        <xsd:element name="quantity" type="xsd:int"/>
+      </xsd:sequence>
+    </xsd:complexType>
+    
+</xsd:schema>

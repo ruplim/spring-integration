@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
+	xmlns:int-xml="http://www.springframework.org/schema/integration/xml"
+	xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration/stream http://www.springframework.org/schema/integration/stream/spring-integration-stream-4.3.xsd
+		http://www.springframework.org/schema/integration/xml http://www.springframework.org/schema/integration/xml/spring-integration-xml-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-4.3.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+      <import resource="queue.xml"/>
+
+	  <int:channel id="inputChannel"/>
+      <int-jms:message-driven-channel-adapter   id="jmsIn" destination="requestQueue" 
+	                                             channel="inputChannel" error-channel="jmsErrorChannel"/>
+	  
+	  <int-xml:validating-filter  id="validatingFilter"
+							   input-channel="inputChannel"
+							   output-channel="outputChannel"						   
+							   schema-type="xml-schema"
+							   throw-exception-on-rejection="true"			
+							   schema-location="classpath:META-INF/spring/integration/xsd/order.xsd"/>
+						 
+
+      <int:chain  input-channel="outputChannel">
+        <int:transformer expression="'Passed Validation - ' + payload "/>
+        <int-stream:stdout-channel-adapter append-newline="true"/>
+      </int:chain>
+      
+      <int:service-activator input-channel="jmsErrorChannel" ref="exceptionHandler" method="process" />
+      
+      <bean id="exceptionHandler" class="com.samples.ExceptionHandler"/>
+      
+</beans>
