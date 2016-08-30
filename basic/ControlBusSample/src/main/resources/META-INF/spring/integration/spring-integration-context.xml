@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
+	xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration/stream http://www.springframework.org/schema/integration/stream/spring-integration-stream-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-4.3.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+    <import resource="queue.xml"/>
+	
+    <!--  Added Wiretap to the inbound channel -->
+	<int:channel id="requestChannel">
+	  <int:interceptors  >
+	    <int:wire-tap  id="inboundTap" channel="tapChannel"/>
+	  </int:interceptors>
+	</int:channel>
+
+	<!-- Business Flow Implementation -->
+	<int-jms:message-driven-channel-adapter id="jmsInboundAdapter" 
+	                                        destination="requestQueue" channel="requestChannel"/>
+	<int-stream:stdout-channel-adapter  channel="requestChannel" append-newline="true"/>
+	
+	<!-- Wire tap implementation -->
+	<int:transformer input-channel="tapChannel" output-channel="tapOutputChannel" expression="'wireTap:' + payload.toUpperCase()" />
+	<int-stream:stdout-channel-adapter  id="tapOutputChannel" append-newline="true"/>
+
+    <!-- Control Bus Implementation -->
+    <!-- Send message as  @inboundTap.start() / @inboundTap.stop() to control wiretap in queue destination : 'controlQueue' -->
+    <int:channel id="controlChannel"/>
+    <int-jms:message-driven-channel-adapter id="jmsInboundControlAdapter" 
+	                                        destination="controlQueue" channel="controlChannel"/>
+	                                        
+    <int:control-bus input-channel="controlChannel"/>
+    
+</beans>
