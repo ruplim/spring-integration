@@ -37,7 +37,7 @@
                                
     <int:chain input-channel="ssnPipe">
       <int:header-enricher>
-        <int:header name="Accept" value="application/json"/>
+        <int:header name="Accept" value="application/xml"/>
       </int:header-enricher>
       <int-http:outbound-gateway http-method="GET"
                                  expected-response-type="com.samples.server.Employee"
