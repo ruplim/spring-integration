@@ -25,7 +25,7 @@ Accept          application/xml
 b. XML Format:
 -------------------
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Employee xmlns="http://www.example.org/xsd/Employee">
+<Employee xmlns="http://www.example.org/RestSample/Employee">
     <EmpId>22</EmpId>
     <EmpFirstName>Stephen</EmpFirstName>
     <EmpLastName>Brian</EmpLastName>
