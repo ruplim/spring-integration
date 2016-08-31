@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns="http://www.example.org/orders"
+            xmlns:tns="http://www.example.org/orders"
+            targetNamespace="http://www.example.org/orders" 
+            elementFormDefault="qualified">
+
+    <xsd:element name="order">
+     <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="orderItem" type="tns:orderItemType" maxOccurs="unbounded"/>
+      </xsd:sequence>
+     </xsd:complexType>
+    </xsd:element>
+    
+    <xsd:complexType name="orderItemType">
+      <xsd:sequence>
+        <xsd:element name="isbn" type="xsd:string"/>
+        <xsd:element name="quantity" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>

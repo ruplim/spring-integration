@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-file="http://www.springframework.org/schema/integration/file"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/integration/file http://www.springframework.org/schema/integration/file/spring-integration-file-4.3.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+			 
+    <!-- Assign directory for the 'List of Orders' and then split -->
+	<int:chain input-channel="orders" output-channel="order">
+	   <int:header-enricher>
+	     <int:header name="OUT_DIRECTORY_NAME" expression="T(java.lang.System).currentTimeMillis()"/>
+	   </int:header-enricher>
+	   <int:splitter expression="payload"/>
+	</int:chain>
+	
+	<!-- Transform and write to file -->	  
+	<int:chain input-channel="order">
+	      <int:transformer  ref="marshallingTransformer"  method="transform"/>
+          <int-file:outbound-channel-adapter 
+                     filename-generator-expression="T(java.lang.System).currentTimeMillis() + '.xml'"
+                     directory-expression="'${file.dir}' + headers['OUT_DIRECTORY_NAME']"  
+                     auto-create-directory="true"/>
+	</int:chain>
+</beans>

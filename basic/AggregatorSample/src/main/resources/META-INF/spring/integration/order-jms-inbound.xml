@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-4.3.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+			 
+    <!-- Define the JMS message driven adapter -->			 
+	<int-jms:message-driven-channel-adapter id="jmsIn" channel="jmsInbound"  error-channel="jmsError" 
+	                                        message-converter="orderMessageConverter"  destination="requestQueue"/>
+	                                        
+	<!-- Incase we want to filter JMS headers from the inbound request -->
+	<int:header-filter  input-channel="jmsInbound" output-channel="orderInbound" header-names="*JMS*" pattern-match="true"/>	
+	
+	<!-- Define the Message converter and pass Unmarshaller reference -->
+	<bean id="orderMessageConverter" class="com.samples.OrderMessageConverter">
+	  <property name="unmarshallingTransformer" ref="unmarshallingTransformer"/>
+	</bean>
+	
+	<!-- Define the unmarshaller -->		
+	<bean id="unmarshallingTransformer" class="org.springframework.integration.xml.transformer.UnmarshallingTransformer">
+	    <constructor-arg index="0" ref="jaxbMarshaller"/>
+	</bean>
+    
+    <!-- Define the marshaller -->			
+	<bean id="marshallingTransformer" class="org.springframework.integration.xml.transformer.MarshallingTransformer">
+	   <constructor-arg index="0" ref="jaxbMarshaller" />
+	   <constructor-arg>
+	     <bean class="org.springframework.integration.xml.transformer.ResultToStringTransformer"/>
+	   </constructor-arg>
+	</bean>
+	
+	<!-- Define the jaxb marshaller -->
+	<bean  id="jaxbMarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+	      <property name="contextPath" value="com.samples.jaxb"/>
+	</bean>
+	
+</beans>
